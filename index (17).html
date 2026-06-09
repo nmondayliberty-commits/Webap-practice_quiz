@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Grammar & Vocabulary Quiz</title>
+    <style>
+        :root {
+            --navy-dark: #0a192f;
+            --navy-light: #172a45;
+            --pink-primary: #ff2a74;
+            --pink-hover: #e01b5d;
+            --text-light: #f4f6f9;
+            --text-muted: #8892b0;
+            --correct-green: #2ecc71;
+            --wrong-red: #e74c3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--navy-dark) 0%, #112240 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background-color: var(--navy-light);
+            width: 100%;
+            max-width: 700px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 42, 116, 0.2);
+            border: 1px solid rgba(255, 42, 116, 0.1);
+            overflow: hidden;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        /* Header / Progress styling */
+        .quiz-header {
+            border-bottom: 2px solid rgba(255, 42, 116, 0.2);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: var(--pink-primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-right: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--pink-primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Question & Options styling */
+        .question-text {
+            font-size: 1.25rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .options-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .option-item:hover {
+            background-color: rgba(255, 42, 116, 0.1);
+            border-color: var(--pink-primary);
+        }
+
+        .option-item.selected {
+            background-color: var(--pink-primary);
+            border-color: var(--pink-primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .option-prefix {
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        /* Navigation buttons styling */
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--pink-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--pink-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Score sheet styling */
+        .score-sheet {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--pink-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 25px auto;
+        }
+
+        .score-num {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--pink-primary);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .review-section {
+            margin-top: 30px;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .review-section::-webkit-scrollbar {
+            width: 6px;
+        }
+        .review-section::-webkit-scrollbar-thumb {
+            background-color: var(--pink-primary);
+            border-radius: 3px;
+        }
+
+        .review-item {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .review-q-text {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .review-status {
+            font-size: 0.9rem;
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .status-correct { color: var(--correct-green); }
+        .status-wrong { color: var(--wrong-red); }
+        .status-unanswered { color: var(--text-muted); }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container" id="quiz-window">
+        <div class="quiz-header">
+            <div class="section-title" id="section-title">General Grammar</div>
+            <div class="progress-container">
+                <span id="question-number-display">Question 1 of 33</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dynamic-content">
+            <div class="question-text" id="question-text">Loading question...</div>
+            <ul class="options-list" id="options-list">
+                </ul>
+        </div>
+
+        <div class="btn-container">
+            <button class="btn btn-secondary" id="btn-prev" disabled>Previous</button>
+            <button class="btn btn-primary" id="btn-next">Next</button>
+            <button class="btn btn-primary hidden" id="btn-submit">Submit Quiz</button>
+        </div>
+    </div>
+
+    <div class="quiz-container hidden" id="score-window">
+        <div class="score-sheet">
+            <h2 style="margin-bottom: 10px;">Quiz Completed!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">Here is your complete summary performance:</p>
+            
+            <div class="score-circle">
+                <div class="score-num" id="final-score">00</div>
+                <div class="score-label" id="final-percentage">0%</div>
+            </div>
+
+            <p style="font-size: 1.1rem; margin-bottom: 30px;" id="performance-feedback"></p>
+
+            <h3 style="text-align: left; margin-bottom: 10px; color: var(--pink-primary);">Detailed Item Breakdown</h3>
+            <div class="review-section" id="review-section">
+                </div>
+
+            <button class="btn btn-primary" style="margin-top: 25px; width: 100%;" onclick="window.location.reload();">Retake Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Complete data object containing all 33 extracted sequential test elements
+        const quizData = [
+            { id: 1, section: "General Tense", q: "Tomorrow afternoon, the weather forecast says it ________ sunny and warm.", options: { A: "was", B: "is", C: "will be", D: "be" }, correct: "C" },
+            { id: 2, section: "General Tense", q: "What is the standard present tense form of the past tense verb 'walked'?", options: { A: "walk", B: "walking", C: "will walk", D: "walked" }, correct: "A" },
+            { id: 3, section: "General Tense", q: "We ________ our grandparents during the winter holidays last December.", options: { A: "visit", B: "visiting", C: "visited", D: "will visit" }, correct: "C" },
+            { id: 4, section: "SECTION C: PREPOSITIONS", q: "The little cat curled up and slept peacefully ________ the warm, cosy blanket.", options: { A: "under", B: "over", C: "between", D: "through" }, correct: "A" },
+            { id: 5, section: "SECTION C: PREPOSITIONS", q: "My primary school bag is resting securely ________ the floor next to my desk.", options: { A: "in", B: "on", C: "at", D: "into" }, correct: "B" },
+            { id: 6, section: "SECTION C: PREPOSITIONS", q: "We carefully walked ________ the narrow wooden bridge to cross the rushing river.", options: { A: "under", B: "inside", C: "across", D: "at" }, correct: "C" },
+            { id: 7, section: "SECTION C: PREPOSITIONS", q: "The wild birds built their nest high up ________ the dense branches of the old tree.", options: { A: "underneath", B: "among", C: "into", D: "betweenly" }, correct: "B" },
+            { id: 8, section: "SECTION C: PREPOSITIONS", q: "Oliver stands exactly ________ his two best friends in the annual class photo.", options: { A: "between", B: "on", C: "through", D: "up" }, correct: "A" },
+            { id: 9, section: "SECTION C: PREPOSITIONS", q: "The passenger train sped quickly ________ the long, dark hillside tunnel.", options: { A: "on", B: "above", C: "at", D: "through" }, correct: "D" },
+            { id: 10, section: "SECTION C: PREPOSITIONS", q: "Please place your muddy boots ________ the front door so the indoor carpet stays clean.", options: { A: "over", B: "outside", C: "in", D: "through" }, correct: "B" },
+            { id: 11, section: "SECTION C: PREPOSITIONS", q: "The bright yellow airplane flew high ________ the fluffy white summer clouds.", options: { A: "underneath", B: "inside", C: "above", D: "at" }, correct: "C" },
+            { id: 12, section: "SECTION C: PREPOSITIONS", q: "We all sat down together ________ the evening campfire to toast sweet marshmallows.", options: { A: "around", B: "in", C: "through", D: "under" }, correct: "A" },
+            { id: 13, section: "SECTION C: PREPOSITIONS", q: "Father hid the spare house key carefully ________ the heavy welcome doormat.", options: { A: "on", B: "beneath", C: "above", D: "into" }, correct: "B" },
+            { id: 14, section: "SECTION D: SYNONYMS", q: "What is a correct synonym for the word 'huge'?", options: { A: "tiny", B: "heavy", C: "enormous", D: "slow" }, correct: "C" },
+            { id: 15, section: "SECTION D: SYNONYMS", q: "Find the synonym for 'quick' used within this sentence: 'The fast rabbit hopped across the field.'", options: { A: "hopped", B: "fast", C: "field", D: "rabbit" }, correct: "B" },
+            { id: 16, section: "SECTION D: SYNONYMS", q: "Which word carries the exact same meaning as the word 'happy'?", options: { A: "cheerful", B: "angry", C: "tired", D: "quiet" }, correct: "A" },
+            { id: 17, section: "SECTION D: SYNONYMS", q: "Choose the closest structural synonym for the verb 'start':", options: { A: "finish", B: "stop", C: "pause", D: "begin" }, correct: "D" },
+            { id: 18, section: "SECTION D: SYNONYMS", q: "What is an appropriate synonym for the word 'shouted'?", options: { A: "whispered", B: "yelled", C: "smiled", D: "thought" }, correct: "B" },
+            { id: 19, section: "SECTION E: HOMONYMS", q: "Which pair of words are homonyms (words that sound identical but mean different things)?", options: { A: "cat / dog", B: "big / large", C: "sun / son", D: "hot / cold" }, correct: "C" },
+            { id: 20, section: "SECTION E: HOMONYMS", q: "Choose the correct homonym spelling: 'I can ________ the beautiful ocean waves crashing.'", options: { A: "here", B: "hear", C: "hair", D: "hare" }, correct: "B" },
+            { id: 21, section: "SECTION E: HOMONYMS", q: "There are ________ tiny little birds sitting completely still on the tree branch.", options: { A: "to", B: "too", C: "tow", D: "two" }, correct: "D" },
+            { id: 22, section: "SECTION E: HOMONYMS", q: "Which of the sentences below uses the underlined homonym word completely correctly?", options: { A: "The heavy wind blue the dry leaves off the tree branch.", B: "My absolute favourite primary colour is dark blew.", C: "She wore a gorgeous bright blue winter coat today.", D: "The blue whale blue water high from its blowhole." }, correct: "C" },
+            { id: 23, section: "SECTION E: HOMONYMS", q: "Our family ate the ________ circular pizza during our movie night last evening.", options: { A: "hole", B: "whole", C: "howl", D: "hall" }, correct: "B" },
+            { id: 24, section: "SECTION F: ANTONYMS", q: "What is the correct antonym (opposite) of the word 'dark'?", options: { A: "black", B: "light", C: "night", D: "cold" }, correct: "B" },
+            { id: 25, section: "SECTION F: ANTONYMS", q: "Choose the correct antonym for the word 'difficult'?", options: { A: "hard", B: "boring", C: "heavy", D: "easy" }, correct: "D" },
+            { id: 26, section: "SECTION F: ANTONYMS", q: "What is the correct antonym of the word 'noisy'?", options: { A: "quiet", B: "loud", C: "happy", D: "fast" }, correct: "A" },
+            { id: 27, section: "SECTION F: ANTONYMS", q: "Identify the antonym of 'rough' inside this sentence: 'The smooth table was cleaner than the bumpy floor.'", options: { A: "cleaner", B: "bumpy", C: "table", D: "smooth" }, correct: "D" },
+            { id: 28, section: "SECTION F: ANTONYMS", q: "What is the true antonym of the word 'empty'?", options: { A: "hollow", B: "full", C: "clear", D: "clean" }, correct: "B" },
+            { id: 29, section: "SECTION F: ANTONYMS", q: "Match the correct chronological antonym: 'Before' is the direct opposite of:", options: { A: "always", B: "during", C: "soon", D: "after" }, correct: "D" },
+            { id: 30, section: "SECTION F: ANTONYMS", q: "What is the proper physical antonym of the word 'heavy'?", options: { A: "light", B: "large", C: "soft", D: "fat" }, correct: "A" },
+            { id: 31, section: "SECTION F: ANTONYMS", q: "Choose the antonym for the word 'tame' (like a gentle family pet dog):", options: { A: "kind", B: "wild", C: "gentle", D: "small" }, correct: "B" },
+            { id: 32, section: "SECTION F: ANTONYMS", q: "What is the standard visual antonym of the word 'beautiful'?", options: { A: "pretty", B: "nice", C: "ugly", D: "scared" }, correct: "C" },
+            { id: 33, section: "SECTION F: ANTONYMS", q: "Identify the correct psychological antonym for the word 'brave':", options: { A: "strong", B: "cowardly", C: "smart", D: "bold" }, correct: "B" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; // Map holding question index keys and character choices ('A','B',etc)
+
+        // Element Selectors
+        const elQuizWindow = document.getElementById('quiz-window');
+        const elScoreWindow = document.getElementById('score-window');
+        const elSectionTitle = document.getElementById('section-title');
+        const elQNumDisplay = document.getElementById('question-number-display');
+        const elProgressFill = document.getElementById('progress-fill');
+        const elQText = document.getElementById('question-text');
+        const elOptionsList = document.getElementById('options-list');
+        
+        const elBtnPrev = document.getElementById('btn-prev');
+        const elBtnNext = document.getElementById('btn-next');
+        const elBtnSubmit = document.getElementById('btn-submit');
+
+        // Initial setup run
+        loadQuestion(currentQuestionIndex);
+
+        // Core Functions
+        function loadQuestion(index) {
+            const currentItem = quizData[index];
+            
+            // Build Context Headers
+            elSectionTitle.textContent = currentItem.section;
+            elQNumDisplay.textContent = `Question ${index + 1} of ${quizData.length}`;
+            
+            // Progress Bar calculation
+            const progressPct = ((index + 1) / quizData.length) * 100;
+            elProgressFill.style.width = `${progressPct}%`;
+
+            // Display Texts
+            elQText.textContent = `${currentItem.id}. ${currentItem.q}`;
+            elOptionsList.innerHTML = '';
+
+            // Inject option structures 
+            Object.keys(currentItem.options).forEach(key => {
+                const li = document.createElement('li');
+                li.className = 'option-item';
+                if(userAnswers[index] === key) {
+                    li.classList.add('selected');
+                }
+                
+                li.innerHTML = `<span class="option-prefix">${key})</span> ${currentItem.options[key]}`;
+                li.addEventListener('click', () => selectOption(index, key));
+                elOptionsList.appendChild(li);
+            });
+
+            // Adjust navigation structures visually 
+            elBtnPrev.disabled = index === 0;
+            
+            if (index === quizData.length - 1) {
+                elBtnNext.classList.add('hidden');
+                elBtnSubmit.classList.remove('hidden');
+            } else {
+                elBtnNext.classList.remove('hidden');
+                elBtnSubmit.classList.add('hidden');
+            }
+        }
+
+        function selectOption(qIndex, keySelected) {
+            userAnswers[qIndex] = keySelected;
+            
+            // Update live UI views instantly without re-rendering everything
+            const optionElements = elOptionsList.querySelectorAll('.option-item');
+            optionElements.forEach((el, index) => {
+                const prefix = Object.keys(quizData[qIndex].options)[index];
+                if(prefix === keySelected) {
+                    el.classList.add('selected');
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
+        }
+
+        // Navigation Bindings
+        elBtnNext.addEventListener('click', () => {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            }
+        });
+
+        elBtnPrev.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+            }
+        });
+
+        elBtnSubmit.addEventListener('click', () => {
+            calculateAndDisplayScores();
+        });
+
+        // Processing score results
+        function calculateAndDisplayScores() {
+            let scoreCount = 0;
+            const reviewContainer = document.getElementById('review-section');
+            reviewContainer.innerHTML = ''; // Reset frame tracking
+
+            quizData.forEach((item, index) => {
+                const selected = userAnswers[index];
+                const isCorrect = selected === item.correct;
+                if(isCorrect) scoreCount++;
+
+                // Element generation for comprehensive breakdown
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'review-item';
+                
+                let statusText = '';
+                if(!selected) {
+                    statusText = `<span class="status-unanswered">Unanswered</span> | Correct: ${item.correct}) ${item.options[item.correct]}`;
+                } else if(isCorrect) {
+                    statusText = `<span class="status-correct">✓ Correct</span> (You chose ${selected})`;
+                } else {
+                    statusText = `<span class="status-wrong">✗ Incorrect</span> | Selected: ${selected}, Correct: ${item.correct}) ${item.options[item.correct]}`;
+                }
+
+                reviewItem.innerHTML = `
+                    <div class="review-q-text">${item.id}. ${item.q}</div>
+                    <div class="review-status">${statusText}</div>
+                `;
+                reviewContainer.appendChild(reviewItem);
+            });
+
+            // Display computations metrics
+            const finalPercentage = Math.round((scoreCount / quizData.length) * 100);
+            document.getElementById('final-score').textContent = `${scoreCount}/${quizData.length}`;
+            document.getElementById('final-percentage').textContent = `${finalPercentage}%`;
+
+            // Performance custom styling commentary
+            let feedback = '';
+            if(finalPercentage >= 85) feedback = "Excellent job! You have a brilliant command over grammar & structures.";
+            else if(finalPercentage >= 60) feedback = "Good effort! A little bit more practice on your weak items will make it perfect.";
+            else feedback = "Keep learning! Review the detailed logs below to sharpen your skill sets.";
+            
+            document.getElementById('performance-feedback').textContent = feedback;
+
+            // Transition windows
+            elQuizWindow.classList.add('hidden');
+            elScoreWindow.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
